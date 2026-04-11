@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Share2 } from "lucide-react";
 import Link from "next/link";
-import DesktopGate from "@/components/desktop-gate";
 import Header from "@/components/layout/header";
 import MobileNav from "@/components/layout/mobile-nav";
 import ReportCard from "@/components/report/report-card";
@@ -57,19 +56,19 @@ export default function WardDetailPage() {
     : "";
 
   return (
-    <DesktopGate>
-      <div className="flex h-full flex-col">
-        <Header />
-        <main className="flex-1 overflow-y-auto pt-[60px] pb-[68px]">
+    <div className="flex h-full flex-col">
+      <Header />
+      <main className="flex-1 overflow-y-auto pt-[60px] pb-[68px] md:pb-8">
+        <div className="mx-auto max-w-3xl px-4 py-4">
           {loading ? (
-            <div className="p-4 space-y-3">
+            <div className="space-y-3">
               <div className="h-8 w-48 animate-pulse rounded bg-gray-100" />
               <div className="h-24 animate-pulse rounded-xl bg-gray-100" />
               <div className="h-24 animate-pulse rounded-xl bg-gray-100" />
             </div>
           ) : ward ? (
-            <div className="px-4 py-4">
-              <Link href="/" className="flex items-center gap-1 text-sm text-gray-500 mb-3">
+            <>
+              <Link href="/" className="flex items-center gap-1 text-sm text-gray-500 mb-3 hover:text-gray-700">
                 <ArrowLeft className="h-4 w-4" />
                 Back to Map
               </Link>
@@ -89,49 +88,53 @@ export default function WardDetailPage() {
                   href={shareUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mb-4 flex items-center justify-center gap-2 rounded-xl bg-black py-3 font-semibold text-white active:bg-gray-800"
+                  className="mb-4 flex items-center justify-center gap-2 rounded-xl bg-black py-3 font-semibold text-white hover:bg-gray-800 active:bg-gray-800 md:w-fit md:px-8"
                 >
                   <Share2 className="h-5 w-5" />
                   Tag Your Neta on X
                 </a>
               )}
 
-              {/* Representatives */}
-              {reps.length > 0 && (
-                <div className="mb-5">
+              <div className="grid gap-6 md:grid-cols-[1fr_300px]">
+                {/* Reports */}
+                <div>
                   <h2 className="text-sm font-semibold text-gray-900 mb-2">
-                    Responsible Representatives
+                    Reports ({reports.length})
                   </h2>
-                  <div className="space-y-2">
-                    {reps.map((rep) => (
-                      <RepCard key={rep.id} rep={rep} />
-                    ))}
+                  <div className="space-y-3">
+                    {reports.length === 0 ? (
+                      <p className="py-6 text-center text-sm text-gray-400">
+                        No reports in this ward yet.
+                      </p>
+                    ) : (
+                      reports.map((report) => (
+                        <ReportCard key={report.id} report={report} />
+                      ))
+                    )}
                   </div>
                 </div>
-              )}
 
-              {/* Reports in this ward */}
-              <h2 className="text-sm font-semibold text-gray-900 mb-2">
-                Reports ({reports.length})
-              </h2>
-              <div className="space-y-3">
-                {reports.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-gray-400">
-                    No reports in this ward yet.
-                  </p>
-                ) : (
-                  reports.map((report) => (
-                    <ReportCard key={report.id} report={report} />
-                  ))
+                {/* Representatives - sidebar on desktop */}
+                {reps.length > 0 && (
+                  <div>
+                    <h2 className="text-sm font-semibold text-gray-900 mb-2">
+                      Responsible Representatives
+                    </h2>
+                    <div className="space-y-2">
+                      {reps.map((rep) => (
+                        <RepCard key={rep.id} rep={rep} />
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
-            </div>
+            </>
           ) : (
-            <div className="p-4 text-center text-gray-400">Ward not found.</div>
+            <div className="text-center text-gray-400">Ward not found.</div>
           )}
-        </main>
-        <MobileNav />
-      </div>
-    </DesktopGate>
+        </div>
+      </main>
+      <MobileNav />
+    </div>
   );
 }

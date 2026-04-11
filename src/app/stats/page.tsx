@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DesktopGate from "@/components/desktop-gate";
 import Header from "@/components/layout/header";
 import MobileNav from "@/components/layout/mobile-nav";
 import { supabase } from "@/lib/supabase/client";
@@ -34,7 +33,6 @@ export default function StatsPage() {
         supabase.from("reports").select("severity, ward_id, wards(ward_number, name)"),
       ]);
 
-      // Count by severity
       const bySeverity: Record<string, number> = {};
       const wardCounts: Record<string, { ward_number: number; name: string; count: number }> = {};
 
@@ -68,45 +66,45 @@ export default function StatsPage() {
   }, []);
 
   return (
-    <DesktopGate>
-      <div className="flex h-full flex-col">
-        <Header />
-        <main className="flex-1 overflow-y-auto pt-[60px] pb-[68px]">
-          <div className="px-4 py-4">
-            <h1 className="text-xl font-bold text-gray-900 mb-4">Dashboard</h1>
+    <div className="flex h-full flex-col">
+      <Header />
+      <main className="flex-1 overflow-y-auto pt-[60px] pb-[68px] md:pb-8">
+        <div className="mx-auto max-w-3xl px-4 py-4">
+          <h1 className="text-xl font-bold text-gray-900 mb-4">Dashboard</h1>
 
-            {loading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-100" />
-                ))}
-              </div>
-            ) : stats ? (
-              <div className="space-y-4">
-                {/* Summary Cards */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl bg-green-50 p-4">
-                    <FileWarning className="h-6 w-6 text-green-600 mb-2" />
-                    <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-                    <p className="text-xs text-gray-500">Total Reports</p>
-                  </div>
-                  <div className="rounded-xl bg-orange-50 p-4">
-                    <AlertTriangle className="h-6 w-6 text-orange-600 mb-2" />
-                    <p className="text-2xl font-bold text-gray-900">{stats.open}</p>
-                    <p className="text-xs text-gray-500">Open</p>
-                  </div>
-                  <div className="rounded-xl bg-blue-50 p-4">
-                    <CheckCircle className="h-6 w-6 text-blue-600 mb-2" />
-                    <p className="text-2xl font-bold text-gray-900">{stats.resolved}</p>
-                    <p className="text-xs text-gray-500">Resolved</p>
-                  </div>
-                  <div className="rounded-xl bg-purple-50 p-4">
-                    <MapPin className="h-6 w-6 text-purple-600 mb-2" />
-                    <p className="text-2xl font-bold text-gray-900">{stats.topWards.length}</p>
-                    <p className="text-xs text-gray-500">Affected Wards</p>
-                  </div>
+          {loading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-100" />
+              ))}
+            </div>
+          ) : stats ? (
+            <div className="space-y-4">
+              {/* Summary Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="rounded-xl bg-green-50 p-4">
+                  <FileWarning className="h-6 w-6 text-green-600 mb-2" />
+                  <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                  <p className="text-xs text-gray-500">Total Reports</p>
                 </div>
+                <div className="rounded-xl bg-orange-50 p-4">
+                  <AlertTriangle className="h-6 w-6 text-orange-600 mb-2" />
+                  <p className="text-2xl font-bold text-gray-900">{stats.open}</p>
+                  <p className="text-xs text-gray-500">Open</p>
+                </div>
+                <div className="rounded-xl bg-blue-50 p-4">
+                  <CheckCircle className="h-6 w-6 text-blue-600 mb-2" />
+                  <p className="text-2xl font-bold text-gray-900">{stats.resolved}</p>
+                  <p className="text-xs text-gray-500">Resolved</p>
+                </div>
+                <div className="rounded-xl bg-purple-50 p-4">
+                  <MapPin className="h-6 w-6 text-purple-600 mb-2" />
+                  <p className="text-2xl font-bold text-gray-900">{stats.topWards.length}</p>
+                  <p className="text-xs text-gray-500">Affected Wards</p>
+                </div>
+              </div>
 
+              <div className="grid gap-4 md:grid-cols-2">
                 {/* Severity Breakdown */}
                 <div className="rounded-xl border border-gray-100 bg-white p-4">
                   <h2 className="text-sm font-semibold text-gray-900 mb-3">By Severity</h2>
@@ -153,11 +151,11 @@ export default function StatsPage() {
                   </div>
                 )}
               </div>
-            ) : null}
-          </div>
-        </main>
-        <MobileNav />
-      </div>
-    </DesktopGate>
+            </div>
+          ) : null}
+        </div>
+      </main>
+      <MobileNav />
+    </div>
   );
 }
