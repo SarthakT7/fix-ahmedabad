@@ -1,6 +1,6 @@
 "use client";
 
-import { User, ExternalLink } from "lucide-react";
+import { ExternalLink, User } from "lucide-react";
 import type { Representative } from "@/types";
 
 function XIcon({ className }: { className?: string }) {
@@ -15,51 +15,42 @@ interface RepCardProps {
   rep: Representative;
 }
 
-const roleBadge: Record<string, { label: string; color: string }> = {
-  corporator: { label: "Corporator", color: "bg-blue-100 text-blue-700" },
-  mla: { label: "MLA", color: "bg-purple-100 text-purple-700" },
-  mp: { label: "MP", color: "bg-orange-100 text-orange-700" },
+const roleLabel: Record<string, string> = {
+  corporator: "Corporator",
+  mla: "MLA",
+  mp: "MP",
 };
 
 export default function RepCard({ rep }: RepCardProps) {
-  const badge = roleBadge[rep.role] || { label: rep.role, color: "bg-gray-100 text-gray-700" };
-
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-3">
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100">
+    <div className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100">
         {rep.photo_url ? (
-          <img src={rep.photo_url} alt={rep.name} className="h-12 w-12 rounded-full object-cover" />
+          <img src={rep.photo_url} alt={rep.name} className="h-9 w-9 rounded-full object-cover" />
         ) : (
-          <User className="h-6 w-6 text-gray-400" />
+          <User className="h-4 w-4 text-gray-400" />
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-gray-900 truncate">{rep.name}</p>
-        <div className="flex items-center gap-2 mt-0.5">
-          <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${badge.color}`}>
-            {badge.label}
-          </span>
-          {rep.party && (
-            <span className="text-xs text-gray-400">{rep.party}</span>
-          )}
-        </div>
-        {rep.constituency && (
-          <p className="text-xs text-gray-400 mt-0.5 truncate">{rep.constituency}</p>
-        )}
+        <p className="text-[13px] font-semibold text-gray-900 truncate">{rep.name}</p>
+        <p className="text-[11px] text-gray-400">
+          {roleLabel[rep.role] || rep.role}
+          {rep.party && ` · ${rep.party}`}
+          {rep.constituency && ` · ${rep.constituency}`}
+        </p>
       </div>
       {rep.twitter_handle ? (
         <a
           href={`https://twitter.com/${rep.twitter_handle}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black text-white"
+          className="flex items-center gap-1 shrink-0 text-[11px] font-medium text-gray-500 hover:text-gray-900"
         >
-          <XIcon className="h-4 w-4" />
+          <XIcon className="h-3 w-3" />
+          @{rep.twitter_handle}
         </a>
       ) : (
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-300">
-          <XIcon className="h-4 w-4" />
-        </div>
+        <span className="text-[11px] text-gray-300 shrink-0">no handle</span>
       )}
     </div>
   );

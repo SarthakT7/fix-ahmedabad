@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, ThumbsUp, Share2 } from "lucide-react";
+import { MapPin, ArrowUp, Share2 } from "lucide-react";
 import { SEVERITY_LEVELS } from "@/lib/constants";
 import { timeAgo } from "@/lib/utils";
 import { supabase } from "@/lib/supabase/client";
@@ -30,102 +30,104 @@ export default function ReportCard({ report }: ReportCardProps) {
 
   const handleUpvote = async () => {
     if (liked) return;
-
     const fingerprint = getFingerprint();
-
     const { error } = await supabase
       .from("report_upvotes")
       .insert({ report_id: report.id, fingerprint });
-
     if (error) {
-      if (error.code === "23505") {
-        // Already upvoted (unique constraint)
-        setLiked(true);
-      }
+      if (error.code === "23505") setLiked(true);
       return;
     }
-
-    // Increment the upvote count on the report
     await supabase
       .from("reports")
       .update({ upvotes: upvotes + 1 })
       .eq("id", report.id);
-
     setUpvotes((prev) => prev + 1);
     setLiked(true);
   };
 
   const handleShare = () => {
-    const wardName = report.wards?.name || "Unknown";
-    const wardNumber = report.wards?.ward_number || 0;
-
     const twitterUrl = buildTwitterIntent({
-      wardName,
-      wardNumber,
+      wardName: report.wards?.name || "Unknown",
+      wardNumber: report.wards?.ward_number || 0,
       severity: report.severity,
       address: report.address || undefined,
       representatives: [],
     });
-
     window.open(twitterUrl, "_blank");
   };
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white overflow-hidden">
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
       {report.image_url && (
-        <img
-          src={report.image_url}
-          alt="Garbage report"
-          className="h-40 w-full object-cover"
-        />
-      )}
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+        <div className="relative">
+          <img
+            src={report.image_url}
+            alt=""
+            className="h-44 w-full object-cover"
+          />
+          <div
+            className="absolute top-2 left-2 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wide text-white"
             style={{ backgroundColor: severity?.markerColor || "#6b7280" }}
           >
-            {severity?.label || report.severity}
-          </span>
-          <span className="text-xs text-gray-400">{timeAgo(report.created_at)}</span>
+            {severity?.label}
+          </div>
         </div>
+      )}
 
-        {report.address && (
-          <div className="flex items-start gap-1.5 mb-1">
-            <MapPin className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gray-400" />
-            <p className="text-sm text-gray-700 line-clamp-1">{report.address}</p>
+      <div className="p-3">
+        {!report.image_url && (
+          <div
+            className="inline-block px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wide text-white mb-2"
+            style={{ backgroundColor: severity?.markerColor || "#6b7280" }}
+          >
+            {severity?.label}
           </div>
         )}
 
-        {report.wards && (
-          <p className="text-xs text-gray-400">
-            Ward {report.wards.ward_number} — {report.wards.name}
+        {report.address && (
+          <p className="text-[13px] text-gray-900 font-medium leading-snug">
+            {report.address}
           </p>
         )}
 
+        <div className="flex items-center gap-1.5 mt-1">
+          {report.wards && (
+            <>
+              <MapPin className="h-3 w-3 text-gray-400" />
+              <span className="text-[11px] text-gray-400">
+                Ward {report.wards.ward_number} &middot; {report.wards.name}
+              </span>
+            </>
+          )}
+          <span className="text-[11px] text-gray-300 ml-auto">{timeAgo(report.created_at)}</span>
+        </div>
+
         {report.description && (
-          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{report.description}</p>
+          <p className="text-[12px] text-gray-500 mt-1.5 line-clamp-2 leading-relaxed">{report.description}</p>
         )}
 
-        <div className="mt-3 flex items-center gap-4 border-t border-gray-50 pt-2">
+        <div className="flex items-center gap-1 mt-2.5 pt-2 border-t border-gray-100">
           <button
             onClick={handleUpvote}
-            className={`flex items-center gap-1 text-xs transition-colors ${
-              liked ? "text-green-600 font-semibold" : "text-gray-400 active:text-green-600"
+            className={`flex items-center gap-1 px-2.5 py-1 rounded text-[12px] font-medium transition-colors ${
+              liked
+                ? "bg-green-50 text-green-700"
+                : "text-gray-500 hover:bg-gray-50"
             }`}
           >
-            <ThumbsUp className={`h-3.5 w-3.5 ${liked ? "fill-current" : ""}`} />
+            <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
             {upvotes}
           </button>
           <button
             onClick={handleShare}
-            className="flex items-center gap-1 text-xs text-gray-400 active:text-black"
+            className="flex items-center gap-1 px-2.5 py-1 rounded text-[12px] font-medium text-gray-500 hover:bg-gray-50 transition-colors"
           >
-            <Share2 className="h-3.5 w-3.5" />
+            <Share2 className="h-3 w-3" />
             Share
           </button>
-          <span className="ml-auto inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium capitalize text-gray-500">
-            {report.status.replace("_", " ")}
+          <span className="ml-auto text-[10px] font-medium text-gray-400 uppercase tracking-wide">
+            {report.status === "open" ? "open" : report.status.replace("_", " ")}
           </span>
         </div>
       </div>

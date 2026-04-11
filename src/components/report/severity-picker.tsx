@@ -11,39 +11,37 @@ interface SeverityPickerProps {
 export default function SeverityPicker({ value, onChange }: SeverityPickerProps) {
   return (
     <div className="space-y-2">
-      <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+      <label className="text-[13px] font-semibold text-gray-700">
         How bad is it? <span className="text-red-500">*</span>
       </label>
-      <div className="space-y-2">
-        {SEVERITY_LEVELS.map((level) => (
-          <button
-            key={level.value}
-            type="button"
-            onClick={() => onChange(level.value)}
-            className={cn(
-              "w-full rounded-xl border-2 p-3 text-left transition-all",
-              value === level.value
-                ? "border-current shadow-sm"
-                : "border-gray-100 bg-white"
-            )}
-            style={
-              value === level.value
-                ? { borderColor: level.color, backgroundColor: `${level.color}08` }
-                : undefined
-            }
-          >
-            <div className="flex items-start gap-3">
-              <div
-                className="mt-0.5 h-4 w-4 shrink-0 rounded-full"
-                style={{ backgroundColor: level.color }}
-              />
-              <div>
-                <p className="font-semibold text-gray-900">{level.label}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{level.description}</p>
+      <div className="space-y-1.5">
+        {SEVERITY_LEVELS.map((level) => {
+          const selected = value === level.value;
+          return (
+            <button
+              key={level.value}
+              type="button"
+              onClick={() => onChange(level.value)}
+              className={cn(
+                "w-full rounded-lg border p-2.5 text-left transition-all",
+                selected
+                  ? "border-gray-900 bg-gray-50"
+                  : "border-gray-200 hover:border-gray-300"
+              )}
+            >
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: level.markerColor }}
+                />
+                <div className="flex-1 min-w-0">
+                  <span className="text-[13px] font-semibold text-gray-900">{level.label}</span>
+                  <span className="text-[11px] text-gray-400 ml-2">{level.description}</span>
+                </div>
               </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

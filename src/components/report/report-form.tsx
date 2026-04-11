@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, CheckCircle2, Share2 } from "lucide-react";
+import { Loader2, Check, ExternalLink } from "lucide-react";
 import PhotoUpload from "./photo-upload";
 import WardSelector from "./ward-selector";
 import SeverityPicker from "./severity-picker";
@@ -33,7 +33,6 @@ export default function ReportForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!imageUrl || !wardId || !severity) {
       alert("Please add a photo, select a ward, and severity level.");
       return;
@@ -58,10 +57,7 @@ export default function ReportForm() {
 
       if (error) throw error;
 
-      // Build share URL
       const ward = data.wards as { name: string; ward_number: number };
-
-      // Fetch representatives for this ward
       const { data: reps } = await supabase
         .from("representatives")
         .select("*")
@@ -86,38 +82,42 @@ export default function ReportForm() {
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-center px-6 py-12 text-center">
-        <CheckCircle2 className="h-16 w-16 text-green-500 mb-4" />
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Report Submitted!</h2>
-        <p className="text-gray-500 mb-6">
-          Thank you for reporting. Now pressure the authorities to take action.
+      <div className="px-4 py-16 text-center">
+        <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
+          <Check className="h-6 w-6 text-green-700" strokeWidth={2.5} />
+        </div>
+        <h2 className="text-lg font-bold text-gray-900 mb-1">Reported</h2>
+        <p className="text-[13px] text-gray-500 mb-6 max-w-xs mx-auto">
+          Now tag the responsible politicians so they can&apos;t ignore it.
         </p>
         <a
           href={shareUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 rounded-xl bg-black px-6 py-3 font-semibold text-white active:bg-gray-800"
+          className="inline-flex items-center gap-2 bg-gray-900 text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-black transition-colors"
         >
-          <Share2 className="h-5 w-5" />
-          Tag Your Neta on X
+          Post on X
+          <ExternalLink className="h-3.5 w-3.5" />
         </a>
-        <button
-          onClick={() => router.push("/")}
-          className="mt-4 text-sm font-medium text-green-600"
-        >
-          Back to Map
-        </button>
+        <div className="mt-4">
+          <button
+            onClick={() => router.push("/")}
+            className="text-[13px] font-medium text-gray-400 hover:text-gray-600"
+          >
+            Back to map
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 px-4 pb-32">
+    <form onSubmit={handleSubmit} className="space-y-4 px-4 pb-28">
       <PhotoUpload value={imageUrl} onChange={setImageUrl} />
       <WardSelector value={wardId} onChange={handleWardChange} />
 
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+        <label className="text-[13px] font-semibold text-gray-700">
           Landmark / Address <span className="text-red-500">*</span>
         </label>
         <input
@@ -125,35 +125,35 @@ export default function ReportForm() {
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder="e.g., Near SG Highway, opposite D-Mart"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
+          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-[13px] text-gray-900 placeholder:text-gray-400 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
         />
       </div>
 
       <SeverityPicker value={severity} onChange={setSeverity} />
 
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-          Description <span className="text-gray-400">(optional)</span>
+        <label className="text-[13px] font-semibold text-gray-700">
+          Description <span className="text-gray-300 font-normal">optional</span>
         </label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          rows={3}
-          placeholder="Any additional details about the garbage dump..."
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 resize-none"
+          rows={2}
+          placeholder="Any extra details..."
+          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-[13px] text-gray-900 placeholder:text-gray-400 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 resize-none"
         />
       </div>
 
       <button
         type="submit"
         disabled={submitting || !imageUrl || !wardId || !severity}
-        className="!mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 py-3.5 font-semibold text-white transition-colors disabled:bg-gray-300 active:bg-green-700"
+        className="!mt-6 w-full bg-green-600 text-white text-[14px] font-semibold py-2.5 rounded-lg transition-colors disabled:bg-gray-200 disabled:text-gray-400 hover:bg-green-700"
       >
         {submitting ? (
-          <>
-            <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
             Submitting...
-          </>
+          </span>
         ) : (
           "Submit Report"
         )}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Share2 } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import Header from "@/components/layout/header";
 import MobileNav from "@/components/layout/mobile-nav";
@@ -36,13 +36,11 @@ export default function WardDetailPage() {
           .select("*")
           .or(`ward_id.eq.${wardId},role.eq.mla,role.eq.mp`),
       ]);
-
       if (wardRes.data) setWard(wardRes.data as unknown as Ward);
       if (reportsRes.data) setReports(reportsRes.data as unknown as typeof reports);
       if (repsRes.data) setReps(repsRes.data as Representative[]);
       setLoading(false);
     };
-
     fetchData();
   }, [wardId]);
 
@@ -62,48 +60,45 @@ export default function WardDetailPage() {
         <div className="mx-auto max-w-3xl px-4 py-4">
           {loading ? (
             <div className="space-y-3">
-              <div className="h-8 w-48 animate-pulse rounded bg-gray-100" />
-              <div className="h-24 animate-pulse rounded-xl bg-gray-100" />
-              <div className="h-24 animate-pulse rounded-xl bg-gray-100" />
+              <div className="h-6 w-40 animate-pulse rounded bg-gray-100" />
+              <div className="h-20 animate-pulse rounded-lg bg-gray-100" />
             </div>
           ) : ward ? (
             <>
-              <Link href="/" className="flex items-center gap-1 text-sm text-gray-500 mb-3 hover:text-gray-700">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Map
+              <Link href="/" className="inline-flex items-center gap-1 text-[12px] text-gray-400 hover:text-gray-600 mb-3">
+                <ArrowLeft className="h-3 w-3" />
+                Map
               </Link>
 
-              <div className="mb-4">
-                <h1 className="text-xl font-bold text-gray-900">
-                  Ward {ward.ward_number} — {ward.name}
-                </h1>
-                <p className="text-sm text-gray-500 mt-0.5">
-                  {ward.zone_name || ""} Zone
-                </p>
+              <div className="flex items-start justify-between mb-5">
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900">
+                    Ward {ward.ward_number} &middot; {ward.name}
+                  </h1>
+                  <p className="text-[12px] text-gray-400">{ward.zone_name || ""} Zone</p>
+                </div>
+                {reps.some((r) => r.twitter_handle) && (
+                  <a
+                    href={shareUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 flex items-center gap-1.5 bg-gray-900 text-white text-[12px] font-semibold px-3 py-1.5 rounded-md hover:bg-black transition-colors"
+                  >
+                    Post on X
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
               </div>
 
-              {/* Tag Politicians */}
-              {reps.some((r) => r.twitter_handle) && (
-                <a
-                  href={shareUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mb-4 flex items-center justify-center gap-2 rounded-xl bg-black py-3 font-semibold text-white hover:bg-gray-800 active:bg-gray-800 md:w-fit md:px-8"
-                >
-                  <Share2 className="h-5 w-5" />
-                  Tag Your Neta on X
-                </a>
-              )}
-
-              <div className="grid gap-6 md:grid-cols-[1fr_300px]">
-                {/* Reports */}
+              <div className="grid gap-6 md:grid-cols-[1fr_280px]">
                 <div>
-                  <h2 className="text-sm font-semibold text-gray-900 mb-2">
-                    Reports ({reports.length})
+                  <h2 className="text-[13px] font-semibold text-gray-700 mb-2">
+                    Reports
+                    <span className="text-gray-400 font-normal ml-1">({reports.length})</span>
                   </h2>
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {reports.length === 0 ? (
-                      <p className="py-6 text-center text-sm text-gray-400">
+                      <p className="py-10 text-center text-[13px] text-gray-400">
                         No reports in this ward yet.
                       </p>
                     ) : (
@@ -114,13 +109,10 @@ export default function WardDetailPage() {
                   </div>
                 </div>
 
-                {/* Representatives - sidebar on desktop */}
                 {reps.length > 0 && (
                   <div>
-                    <h2 className="text-sm font-semibold text-gray-900 mb-2">
-                      Responsible Representatives
-                    </h2>
-                    <div className="space-y-2">
+                    <h2 className="text-[13px] font-semibold text-gray-700 mb-2">Representatives</h2>
+                    <div className="border border-gray-200 rounded-lg px-3">
                       {reps.map((rep) => (
                         <RepCard key={rep.id} rep={rep} />
                       ))}
@@ -130,7 +122,7 @@ export default function WardDetailPage() {
               </div>
             </>
           ) : (
-            <div className="text-center text-gray-400">Ward not found.</div>
+            <div className="text-center text-[13px] text-gray-400 py-16">Ward not found.</div>
           )}
         </div>
       </main>
