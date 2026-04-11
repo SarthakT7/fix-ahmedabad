@@ -60,7 +60,7 @@ export default function FeedPage() {
         </div>
 
         <div className="mx-auto max-w-3xl px-4 pb-4">
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid auto-rows-fr items-stretch gap-3 md:grid-cols-2 lg:grid-cols-3">
             {loading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="h-44 animate-pulse rounded-lg bg-gray-100" />
@@ -71,7 +71,7 @@ export default function FeedPage() {
               </div>
             ) : (
               reports.map((report) => (
-                <ReportCard key={report.id} report={report} />
+                <ReportCard key={report.id} report={report} equalHeight />
               ))
             )}
           </div>
