@@ -46,10 +46,10 @@ export default function FeedPage() {
                 <button
                   key={s.value}
                   onClick={() => setSeverityFilter(s.value)}
-                  className={`shrink-0 px-3 py-1 text-[12px] font-medium rounded-md border transition-colors ${
+                  className={`shrink-0 cursor-pointer px-3 py-1 text-[12px] font-medium rounded-md border transition-colors ${
                     active
-                      ? "border-gray-900 bg-gray-900 text-white"
-                      : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      ? "border-gray-900 bg-gray-900 text-white hover:bg-black"
+                      : "border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
                   {s.label}
