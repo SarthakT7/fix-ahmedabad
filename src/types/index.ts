@@ -21,8 +21,6 @@ export interface Representative {
   role: "corporator" | "mla" | "mp";
   party: string | null;
   constituency: string | null;
-  ward_id: string | null;
-  zone_id: string | null;
   photo_url: string | null;
   twitter_handle: string | null;
   phone: string | null;

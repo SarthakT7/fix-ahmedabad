@@ -3,13 +3,12 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/layout/header";
 import MobileNav from "@/components/layout/mobile-nav";
-import ReportCard from "@/components/report/report-card";
+import ReportCard, { type ReportCardData } from "@/components/report/report-card";
 import { supabase } from "@/lib/supabase/client";
 import { SEVERITY_LEVELS } from "@/lib/constants";
-import type { Report } from "@/types";
 
 export default function FeedPage() {
-  const [reports, setReports] = useState<(Report & { wards: { name: string; ward_number: number } })[]>([]);
+  const [reports, setReports] = useState<ReportCardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [severityFilter, setSeverityFilter] = useState<string>("all");
 
@@ -17,7 +16,9 @@ export default function FeedPage() {
     const fetchReports = async () => {
       let query = supabase
         .from("reports")
-        .select("*, wards(name, ward_number)")
+        .select(
+          "*, wards(name, ward_number, ward_representatives(representatives(*)))"
+        )
         .order("created_at", { ascending: false })
         .limit(50);
       if (severityFilter !== "all") {
@@ -71,7 +72,7 @@ export default function FeedPage() {
               </div>
             ) : (
               reports.map((report) => (
-                <ReportCard key={report.id} report={report} equalHeight />
+                <ReportCard key={report.id} report={report} />
               ))
             )}
           </div>

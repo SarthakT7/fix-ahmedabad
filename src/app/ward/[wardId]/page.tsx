@@ -6,18 +6,18 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import Header from "@/components/layout/header";
 import MobileNav from "@/components/layout/mobile-nav";
-import ReportCard from "@/components/report/report-card";
+import ReportCard, { type ReportCardData } from "@/components/report/report-card";
 import RepCard from "@/components/representative/rep-card";
 import { supabase } from "@/lib/supabase/client";
 import { buildTwitterIntent } from "@/lib/social/twitter-intent";
-import type { Ward, Report, Representative } from "@/types";
+import type { Ward, Representative } from "@/types";
 
 export default function WardDetailPage() {
   const params = useParams();
   const wardId = params.wardId as string;
 
   const [ward, setWard] = useState<Ward | null>(null);
-  const [reports, setReports] = useState<(Report & { wards: { name: string; ward_number: number } })[]>([]);
+  const [reports, setReports] = useState<ReportCardData[]>([]);
   const [reps, setReps] = useState<Representative[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,18 +27,27 @@ export default function WardDetailPage() {
         supabase.from("wards").select("*, zones(name)").eq("id", wardId).single(),
         supabase
           .from("reports")
-          .select("*, wards(name, ward_number)")
+          .select(
+            "*, wards(name, ward_number, ward_representatives(representatives(*)))"
+          )
           .eq("ward_id", wardId)
           .order("created_at", { ascending: false })
           .limit(20),
         supabase
-          .from("representatives")
-          .select("*")
-          .or(`ward_id.eq.${wardId},role.eq.mla,role.eq.mp`),
+          .from("ward_representatives")
+          .select("representatives(*)")
+          .eq("ward_id", wardId),
       ]);
       if (wardRes.data) setWard(wardRes.data as unknown as Ward);
-      if (reportsRes.data) setReports(reportsRes.data as unknown as typeof reports);
-      if (repsRes.data) setReps(repsRes.data as Representative[]);
+      if (reportsRes.data) setReports(reportsRes.data as unknown as ReportCardData[]);
+      if (repsRes.data) {
+        const roleOrder: Record<string, number> = { corporator: 0, mla: 1, mp: 2 };
+        const flat = (repsRes.data as unknown as { representatives: Representative }[])
+          .map((r) => r.representatives)
+          .filter(Boolean)
+          .sort((a, b) => (roleOrder[a.role] ?? 9) - (roleOrder[b.role] ?? 9));
+        setReps(flat);
+      }
       setLoading(false);
     };
     fetchData();

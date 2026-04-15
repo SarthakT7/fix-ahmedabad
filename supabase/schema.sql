@@ -23,36 +23,32 @@ CREATE TABLE IF NOT EXISTS wards (
 CREATE INDEX IF NOT EXISTS idx_wards_zone ON wards(zone_id);
 
 -- 3. Representatives
+-- A single elected official (corporator / MLA / MP). The ward association
+-- lives in the ward_representatives junction table below, because a single
+-- MLA or MP covers many wards.
 CREATE TABLE IF NOT EXISTS representatives (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('corporator', 'mla', 'mp')),
   party TEXT,
   constituency TEXT,
-  ward_id UUID REFERENCES wards(id),
-  zone_id UUID REFERENCES zones(id),
   photo_url TEXT,
   twitter_handle TEXT,
   phone TEXT,
   email TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_reps_ward ON representatives(ward_id);
 CREATE INDEX IF NOT EXISTS idx_reps_role ON representatives(role);
 
--- 4. Ward-MLA mapping (many-to-many)
-CREATE TABLE IF NOT EXISTS ward_mla_mapping (
-  ward_id UUID REFERENCES wards(id),
-  representative_id UUID REFERENCES representatives(id),
+-- 4. Ward ↔ Representative junction (many-to-many).
+-- Corporators → 1 ward. MLAs → ~3 wards. MPs → ~18 wards.
+CREATE TABLE IF NOT EXISTS ward_representatives (
+  ward_id UUID REFERENCES wards(id) ON DELETE CASCADE,
+  representative_id UUID REFERENCES representatives(id) ON DELETE CASCADE,
   PRIMARY KEY (ward_id, representative_id)
 );
-
--- 5. Ward-MP mapping (many-to-many)
-CREATE TABLE IF NOT EXISTS ward_mp_mapping (
-  ward_id UUID REFERENCES wards(id),
-  representative_id UUID REFERENCES representatives(id),
-  PRIMARY KEY (ward_id, representative_id)
-);
+CREATE INDEX IF NOT EXISTS idx_ward_reps_ward ON ward_representatives(ward_id);
+CREATE INDEX IF NOT EXISTS idx_ward_reps_rep ON ward_representatives(representative_id);
 
 -- 6. Reports
 CREATE TABLE IF NOT EXISTS reports (
@@ -91,8 +87,7 @@ CREATE TABLE IF NOT EXISTS report_upvotes (
 ALTER TABLE zones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE representatives ENABLE ROW LEVEL SECURITY;
-ALTER TABLE ward_mla_mapping ENABLE ROW LEVEL SECURITY;
-ALTER TABLE ward_mp_mapping ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ward_representatives ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE report_upvotes ENABLE ROW LEVEL SECURITY;
 
@@ -100,8 +95,7 @@ ALTER TABLE report_upvotes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read zones" ON zones FOR SELECT USING (true);
 CREATE POLICY "Public read wards" ON wards FOR SELECT USING (true);
 CREATE POLICY "Public read representatives" ON representatives FOR SELECT USING (true);
-CREATE POLICY "Public read ward_mla" ON ward_mla_mapping FOR SELECT USING (true);
-CREATE POLICY "Public read ward_mp" ON ward_mp_mapping FOR SELECT USING (true);
+CREATE POLICY "Public read ward_representatives" ON ward_representatives FOR SELECT USING (true);
 
 -- Reports: anyone can read and create
 CREATE POLICY "Public read reports" ON reports FOR SELECT USING (true);
