@@ -20,7 +20,7 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-1.5">
           <MapPin className="h-5 w-5 text-green-600" strokeWidth={2.5} />
           <span className="text-base font-extrabold tracking-tight text-gray-900">
-            swachh<span className="text-green-600">amdavad</span>
+            fix<span className="text-green-600">ahmedabad</span>
           </span>
         </Link>
 

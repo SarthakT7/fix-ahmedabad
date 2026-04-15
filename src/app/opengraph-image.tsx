@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Fix AHM — Crowdsourced Garbage Map for Ahmedabad";
+export const alt = "Fix Ahmedabad — Crowdsourced Garbage Map for Ahmedabad";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -61,7 +61,7 @@ export default function OGImage() {
                 letterSpacing: "-1px",
               }}
             >
-              Fix AHM
+              Fix Ahmedabad
             </h1>
             <p
               style={{

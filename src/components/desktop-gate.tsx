@@ -23,7 +23,7 @@ export default function DesktopGate({ children }: { children: React.ReactNode })
             <Smartphone className="h-10 w-10" />
           </div>
           <h1 className="mb-3 text-2xl font-bold text-gray-900">
-            Fix AHM
+            Fix Ahmedabad
           </h1>
           <p className="mb-6 text-gray-600">
             This app is designed for mobile devices. Please open it on your phone for the best experience.
@@ -36,7 +36,7 @@ export default function DesktopGate({ children }: { children: React.ReactNode })
               QR Code
             </div>
             <p className="mt-3 text-xs text-gray-500">
-              Or visit this URL on your phone
+              Or visit <span className="font-medium text-green-700">fixahm.xyz</span> on your phone
             </p>
           </div>
         </div>

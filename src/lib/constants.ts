@@ -44,5 +44,5 @@ export const ZONES = [
   "South West",
 ] as const;
 
-export const APP_NAME = "Fix AHM";
+export const APP_NAME = "Fix Ahmedabad";
 export const APP_TAGLINE = "Report garbage. Tag your neta. Fix Ahmedabad.";
