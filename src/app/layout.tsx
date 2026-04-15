@@ -9,13 +9,14 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: {
-    default: "Swachh Amdavad — Report Garbage, Tag Your Neta",
-    template: "%s | Swachh Amdavad",
+    default: "Fix AHM — Report Garbage, Tag Your Neta",
+    template: "%s | Fix AHM",
   },
   description:
     "Crowdsourced garbage reporting for Ahmedabad. Report dumps, tag your MLA/MP/Corporator, and pressure authorities to clean up. 48 wards covered.",
   keywords: [
-    "Swachh Amdavad",
+    "Fix AHM",
+    "fixahm",
     "Ahmedabad garbage",
     "garbage reporting",
     "AMC complaint",
@@ -30,15 +31,15 @@ export const metadata: Metadata = {
     "crowdsourced",
     "neta tag",
   ],
-  authors: [{ name: "Swachh Amdavad" }],
-  creator: "Swachh Amdavad",
-  metadataBase: new URL("https://swachh-amdavad.vercel.app"),
+  authors: [{ name: "Fix AHM" }],
+  creator: "Fix AHM",
+  metadataBase: new URL("https://fixahm.xyz"),
   openGraph: {
-    title: "Swachh Amdavad — Report Garbage, Tag Your Neta",
+    title: "Fix AHM — Report Garbage, Tag Your Neta",
     description:
       "Crowdsourced garbage reporting for Ahmedabad. Report dumps on the map, tag your MLA/MP/Corporator on X, and pressure authorities to clean up.",
-    url: "https://swachh-amdavad.vercel.app",
-    siteName: "Swachh Amdavad",
+    url: "https://fixahm.xyz",
+    siteName: "Fix AHM",
     locale: "en_IN",
     type: "website",
     images: [
@@ -46,15 +47,15 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Swachh Amdavad — Crowdsourced Garbage Map for Ahmedabad",
+        alt: "Fix AHM — Crowdsourced Garbage Map for Ahmedabad",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Swachh Amdavad — Report Garbage, Tag Your Neta",
+    title: "Fix AHM — Report Garbage, Tag Your Neta",
     description:
-      "Crowdsourced garbage reporting for Ahmedabad. 48 wards. Tag your MLA/MP. Clean Amdavad.",
+      "Crowdsourced garbage reporting for Ahmedabad. 48 wards. Tag your MLA/MP. Fix Ahmedabad.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -93,10 +94,10 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "Swachh Amdavad",
+              name: "Fix AHM",
               description:
                 "Crowdsourced garbage reporting for Ahmedabad. Report dumps, tag your MLA/MP/Corporator, and pressure authorities to clean up.",
-              url: "https://swachh-amdavad.vercel.app",
+              url: "https://fixahm.xyz",
               applicationCategory: "UtilityApplication",
               operatingSystem: "Web",
               offers: {

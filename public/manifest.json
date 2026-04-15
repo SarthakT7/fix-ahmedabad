@@ -1,7 +1,7 @@
 {
-  "name": "Swachh Amdavad",
-  "short_name": "SwachhAmdavad",
-  "description": "Report garbage. Tag your neta. Clean Amdavad.",
+  "name": "Fix AHM",
+  "short_name": "FixAHM",
+  "description": "Report garbage. Tag your neta. Fix Ahmedabad.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

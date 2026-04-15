@@ -23,7 +23,7 @@ export default function DesktopGate({ children }: { children: React.ReactNode })
             <Smartphone className="h-10 w-10" />
           </div>
           <h1 className="mb-3 text-2xl font-bold text-gray-900">
-            Swachh Amdavad
+            Fix AHM
           </h1>
           <p className="mb-6 text-gray-600">
             This app is designed for mobile devices. Please open it on your phone for the best experience.
