@@ -10,13 +10,13 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: {
-    default: "Fix AHM — Report Garbage, Tag Your Neta",
-    template: "%s | Fix AHM",
+    default: "Fix Ahmedabad — Report Garbage, Tag Your Neta",
+    template: "%s | Fix Ahmedabad",
   },
   description:
     "Crowdsourced garbage reporting for Ahmedabad. Report dumps, tag your MLA/MP/Corporator, and pressure authorities to clean up. 48 wards covered.",
   keywords: [
-    "Fix AHM",
+    "Fix Ahmedabad",
     "fixahm",
     "Ahmedabad garbage",
     "garbage reporting",
@@ -32,15 +32,15 @@ export const metadata: Metadata = {
     "crowdsourced",
     "neta tag",
   ],
-  authors: [{ name: "Fix AHM" }],
-  creator: "Fix AHM",
+  authors: [{ name: "Fix Ahmedabad" }],
+  creator: "Fix Ahmedabad",
   metadataBase: new URL("https://fixahm.xyz"),
   openGraph: {
-    title: "Fix AHM — Report Garbage, Tag Your Neta",
+    title: "Fix Ahmedabad — Report Garbage, Tag Your Neta",
     description:
       "Crowdsourced garbage reporting for Ahmedabad. Report dumps on the map, tag your MLA/MP/Corporator on X, and pressure authorities to clean up.",
     url: "https://fixahm.xyz",
-    siteName: "Fix AHM",
+    siteName: "Fix Ahmedabad",
     locale: "en_IN",
     type: "website",
     images: [
@@ -48,13 +48,13 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Fix AHM — Crowdsourced Garbage Map for Ahmedabad",
+        alt: "Fix Ahmedabad — Crowdsourced Garbage Map for Ahmedabad",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fix AHM — Report Garbage, Tag Your Neta",
+    title: "Fix Ahmedabad — Report Garbage, Tag Your Neta",
     description:
       "Crowdsourced garbage reporting for Ahmedabad. 48 wards. Tag your MLA/MP. Fix Ahmedabad.",
     images: ["/og-image.png"],
@@ -95,7 +95,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "Fix AHM",
+              name: "Fix Ahmedabad",
               description:
                 "Crowdsourced garbage reporting for Ahmedabad. Report dumps, tag your MLA/MP/Corporator, and pressure authorities to clean up.",
               url: "https://fixahm.xyz",
