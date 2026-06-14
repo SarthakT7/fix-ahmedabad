@@ -21,6 +21,7 @@ export default function ReportForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
+  const [error, setError] = useState("");
 
   const handleWardChange = useCallback(
     (id: string, lat?: number, lng?: number) => {
@@ -33,16 +34,18 @@ export default function ReportForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     if (!imageUrl || !wardId || !severity) {
-      alert("Please add a photo, select a ward, and severity level.");
+      setError("Please add a photo, select a ward, and severity level.");
       return;
     }
 
     setSubmitting(true);
     try {
-      const { data, error } = await supabase
-        .from("reports")
-        .insert({
+      const res = await fetch("/api/reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           ward_id: wardId,
           latitude: latitude || 23.0225,
           longitude: longitude || 72.5714,
@@ -50,13 +53,19 @@ export default function ReportForm() {
           severity,
           description: description || null,
           image_url: imageUrl,
-          status: "open",
-        })
-        .select("*, wards(name, ward_number)")
-        .single();
+        }),
+      });
 
-      if (error) throw error;
+      const json = await res.json();
 
+      if (!res.ok) {
+        // Rejected image: clear the photo so the user can retake it.
+        if (json.code === "image_rejected") setImageUrl(null);
+        setError(json.error || "Failed to submit report. Please try again.");
+        return;
+      }
+
+      const data = json.data;
       const ward = data.wards as { name: string; ward_number: number };
       const { data: reps } = await supabase
         .from("representatives")
@@ -74,7 +83,7 @@ export default function ReportForm() {
       setShareUrl(twitterUrl);
       setSubmitted(true);
     } catch {
-      alert("Failed to submit report. Please try again.");
+      setError("Failed to submit report. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -143,6 +152,12 @@ export default function ReportForm() {
           className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-[13px] text-gray-900 placeholder:text-gray-400 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 resize-none"
         />
       </div>
+
+      {error && (
+        <p className="mt-4! rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-[12px] text-red-700">
+          {error}
+        </p>
+      )}
 
       <button
         type="submit"
