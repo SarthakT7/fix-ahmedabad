@@ -97,6 +97,7 @@ export async function POST(request: NextRequest) {
   // Minimal AI gate: reject obvious non-garbage images (screenshots, memes,
   // solid colors). Fails open — a network/AI error lets the report through.
   const check = await checkGarbageImage(image_url);
+  console.log(`[reports] image gate: allow=${check.allow} reason=${check.reason} url=${image_url}`);
   if (!check.allow) {
     const path = storagePathFromUrl(image_url);
     if (path) await supabase.storage.from(REPORT_IMAGES_BUCKET).remove([path]);

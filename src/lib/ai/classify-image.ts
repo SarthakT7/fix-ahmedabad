@@ -59,7 +59,10 @@ export interface ImageCheck {
  */
 export async function checkGarbageImage(imageUrl: string): Promise<ImageCheck> {
   const token = process.env.REPLICATE_API_TOKEN;
-  if (!token) return { allow: true, reason: "ai-disabled" };
+  if (!token) {
+    console.warn("[image-gate] no REPLICATE_API_TOKEN — allowing image");
+    return { allow: true, reason: "ai-disabled" };
+  }
 
   try {
     const labels = [...POSITIVE_LABELS, ...NEGATIVE_LABELS];
@@ -70,8 +73,9 @@ export async function checkGarbageImage(imageUrl: string): Promise<ImageCheck> {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
-        // Wait synchronously for the result (CLIP finishes in a few seconds).
-        Prefer: "wait=30",
+        // Wait synchronously for the result (max 60s). A cold model boot can
+        // exceed this, so we fall back to polling below.
+        Prefer: "wait=60",
       },
       body: JSON.stringify({
         version: REPLICATE_VERSION,
@@ -79,15 +83,49 @@ export async function checkGarbageImage(imageUrl: string): Promise<ImageCheck> {
       }),
     });
 
-    if (!res.ok) return { allow: true, reason: "ai-error" };
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      console.error(`[image-gate] replicate POST failed: ${res.status} ${text}`);
+      return { allow: true, reason: "ai-error" };
+    }
 
-    const data = await res.json();
-    const output: { input: string; embedding: number[] }[] = data?.output;
-    if (!Array.isArray(output)) return { allow: true, reason: "ai-error" };
+    let prediction = await res.json();
+
+    // If the model was still cold-booting when "wait" elapsed, poll until done.
+    const pollUrl: string | undefined = prediction?.urls?.get;
+    let polls = 0;
+    while (
+      pollUrl &&
+      (prediction?.status === "starting" || prediction?.status === "processing") &&
+      polls < 30
+    ) {
+      await new Promise((r) => setTimeout(r, 2000));
+      const pr = await fetch(pollUrl, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      prediction = await pr.json();
+      polls++;
+    }
+
+    if (prediction?.status !== "succeeded") {
+      console.error(
+        `[image-gate] prediction not succeeded: status=${prediction?.status} error=${prediction?.error}`
+      );
+      return { allow: true, reason: "ai-error" };
+    }
+
+    const output: { input: string; embedding: number[] }[] = prediction?.output;
+    if (!Array.isArray(output)) {
+      console.error("[image-gate] output not an array");
+      return { allow: true, reason: "ai-error" };
+    }
 
     const byInput = new Map(output.map((o) => [o.input, o.embedding]));
     const imgEmb = byInput.get(imageUrl);
-    if (!imgEmb) return { allow: true, reason: "ai-error" };
+    if (!imgEmb) {
+      console.error("[image-gate] no embedding for image url in output");
+      return { allow: true, reason: "ai-error" };
+    }
 
     let maxPos = -Infinity;
     let maxNeg = -Infinity;
@@ -101,12 +139,19 @@ export async function checkGarbageImage(imageUrl: string): Promise<ImageCheck> {
     }
 
     if (maxPos === -Infinity || maxNeg === -Infinity) {
+      console.error("[image-gate] missing label embeddings");
       return { allow: true, reason: "ai-error" };
     }
 
     const allow = maxPos + LENIENCY_BIAS >= maxNeg;
+    console.log(
+      `[image-gate] maxPos=${maxPos.toFixed(4)} maxNeg=${maxNeg.toFixed(
+        4
+      )} bias=${LENIENCY_BIAS} -> ${allow ? "ALLOW" : "REJECT"}`
+    );
     return { allow, reason: allow ? "ok" : "not-garbage" };
-  } catch {
+  } catch (err) {
+    console.error("[image-gate] exception:", err);
     return { allow: true, reason: "ai-error" };
   }
 }
